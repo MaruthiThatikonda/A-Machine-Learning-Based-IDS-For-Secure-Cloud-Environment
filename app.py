@@ -5,6 +5,7 @@ import time
 import sqlite3
 import socket
 import smtplib
+import subprocess
 import pandas as pd
 import numpy as np
 import traceback
@@ -321,4 +322,10 @@ def handle_new_flow(data):
 
 if __name__ == '__main__':
     print("🚀 Cloud Security System Running on http://localhost:5000")
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False)
+    port = int(os.environ.get("PORT", 5000))
+    subprocess.Popen([
+    "python", "generator.py",
+    "--csv", "data/CICIDS2017_subset.csv",
+    "--speed", "1"
+    ])
+    socketio.run(app, host='0.0.0.0', port=port, debug=False)
