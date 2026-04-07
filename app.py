@@ -339,4 +339,4 @@ if __name__ == '__main__':
     "--csv", "data/CICIDS2017_subset.csv",
     "--speed", "1"
     ])
-    socketio.run(app, host='0.0.0.0', port=port, debug=False)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False)

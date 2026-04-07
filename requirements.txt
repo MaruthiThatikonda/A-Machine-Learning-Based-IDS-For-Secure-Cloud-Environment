@@ -7,3 +7,4 @@ numpy
 geoip2
 joblib
 scikit-learn
+shap
