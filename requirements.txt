@@ -6,3 +6,4 @@ pandas
 numpy
 geoip2
 joblib
+scikit-learn
