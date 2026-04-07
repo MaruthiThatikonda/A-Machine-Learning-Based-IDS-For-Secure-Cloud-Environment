@@ -1,4 +1,6 @@
 # app.py
+import eventlet
+eventlet.monkey_patch()
 import os
 import json
 import time
@@ -333,10 +335,10 @@ def handle_new_flow(data):
 
 if __name__ == '__main__':
     print("🚀 Cloud Security System Running on http://localhost:5000")
-    port = int(os.environ.get("PORT", 5000))
     subprocess.Popen([
     "python", "generator.py",
     "--csv", "data/CICIDS2017_subset.csv",
     "--speed", "1"
     ])
+    port = int(os.environ.get("PORT", 5000))
     socketio.run(app, host='0.0.0.0', port=5000, debug=False)
