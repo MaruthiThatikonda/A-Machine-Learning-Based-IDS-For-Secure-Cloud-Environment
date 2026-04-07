@@ -1,0 +1,21 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Database files
+*.db
+
+# Large datasets
+*.csv
+
+# GeoIP database
+GeoLite2-City.mmdb
+
+# OS files
+.DS_Store
+
+# Logs
+*.log

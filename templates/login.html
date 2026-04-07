@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block content %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login — NIDS Demo</title>
+
+  <!-- Theme CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='templatemo-chain-summit.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    .login-section {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(10,10,30,1) 0%, rgba(5,5,20,1) 100%);
+    }
+    .login-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+      color: #fff;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+    .login-box h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #00ccff;
+      margin-bottom: 1.5rem;
+    }
+    .login-box form {
+      text-align: left;
+    }
+    .login-box label {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+    .login-box input {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      width: 100%;
+      color: #fff;
+      margin-bottom: 1rem;
+      outline: none;
+    }
+    .login-box input:focus {
+      box-shadow: 0 0 8px #00ccff;
+    }
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(90deg, #00ccff, #8a2be2);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-login:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(0,204,255,0.4);
+    }
+    .register-link {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .register-link a {
+      color: #00ccff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+    /* Background particles */
+    .bg-animation {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-section">
+    <div class="bg-animation">
+      <div class="neural-network" id="neuralNetwork"></div>
+      <div class="particles" id="particles"></div>
+    </div>
+
+    <div class="login-box">
+      <h2><i class="fa-solid fa-user-shield"></i> Login</h2>
+      <form method="POST">
+        <div class="form-group">
+          <label for="username"><i class="fa-solid fa-user"></i> Username</label>
+          <input id="username" name="username" type="text" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password"><i class="fa-solid fa-lock"></i> Password</label>
+          <input id="password" name="password" type="password" required />
+        </div>
+
+        <button type="submit" class="btn-login">
+          <i class="fa-solid fa-right-to-bracket"></i> Login
+        </button>
+      </form>
+
+      <p class="register-link">
+        New here? <a href="/register">Register now</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='templatemo-chain-scripts.js') }}"></script>
+</body>
+</html>
+{% endblock %}

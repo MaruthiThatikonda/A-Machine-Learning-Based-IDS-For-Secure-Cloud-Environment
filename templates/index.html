@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% block title %}Cloud Security Platform{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-host-cloud.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}">
+<title>Cloud Security Platform</title>
+    <style>
+        /* --- VISIBILITY FIXES (Dark Text on White Cards) --- */
+        body { color: #1e1e1e; }
+
+        /* Card Styling */
+        .service-item {
+            background-color: #ffffff !important;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            text-align: center;
+            padding: 50px 30px !important;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        .service-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        /* Icons */
+        .service-item .icon {
+            margin: 0 auto 25px auto;
+            width: 90px; height: 90px;
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 36px;
+            transition: all 0.3s;
+        }
+        .service-item:hover .icon {
+            transform: scale(1.1);
+        }
+
+        /* Text Visibility */
+        .service-item h4 {
+            color: #1e1e1e !important;
+            font-weight: 800;
+            font-size: 22px;
+            margin-bottom: 15px;
+            text-transform: capitalize;
+        }
+        .service-item p {
+            color: #555 !important;
+            font-size: 15px;
+            line-height: 1.7;
+            font-weight: 500;
+            opacity: 1 !important;
+        }
+
+        /* Banner Text Visibility */
+        .banner .caption h2 {
+            font-size: 48px;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+        .banner .caption p {
+            color: #fff !important;
+            font-size: 20px;
+            font-weight: 400;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* Custom Buttons using Theme Gradient */
+        .btn-theme {
+            display: inline-block;
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+            color: #fff !important;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 15px 35px;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            border: none;
+            margin: 0 10px;
+        }
+        .btn-theme:hover {
+            opacity: 0.9;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,242,254,0.3);
+        }
+
+        .btn-white {
+            display: inline-block;
+            background-color: #fff;
+            color: #4facfe !important;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 15px 35px;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            border: none;
+            margin: 0 10px;
+        }
+        .btn-white:hover {
+            background-color: #f0f0f0;
+            color: #00f2fe !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="banner">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-8 offset-md-2">
+            <div class="header-text caption">
+              <h2>Cloud Security &<br>Intrusion Detection</h2>
+              <p>Advanced Intrusion Detection System for Cloud Environments.<br>
+                 Protecting devices from attacks using Machine Learning.</p>
+              
+              <div class="buttons-section" style="margin-top: 40px;">
+                <a href="/prediction" class="btn-theme">
+                   <i class="fa fa-chart-line"></i> Live Monitor
+                </a>
+                <a href="/admin" class="btn-white">
+                   <i class="fa fa-cogs"></i> Admin Config
+                </a>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="services section" style="background-color: #f9f9f9; padding-top: 80px;">
+      <div class="container">
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section-heading text-center" style="margin-bottom: 60px;">
+              <span style="color: #4facfe; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">System Capabilities</span>
+              <h2 style="color: #1e1e1e; margin-top: 10px;">Comprehensive Protection</h2>
+              <p style="color: #666; max-width: 600px; margin: 0 auto;">Our platform combines rule-based filtering with anomaly detection to secure your network infrastructure.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          
+          <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="service-item">
+              <div class="icon">
+                <i class="fa fa-globe"></i>
+              </div>
+              <h4>Real-time Dashboard</h4>
+              <p>Visualize source IPs on a live map and monitor packet latency in real-time using our WebSocket-powered interface.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="service-item">
+              <div class="icon">
+                <i class="fa fa-shield-alt"></i>
+              </div>
+              <h4>DDoS Mitigation</h4>
+              <p>Instantly detects high-volume attacks like SYN Floods and UDP floods specifically targeting IoT protocols.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="service-item">
+              <div class="icon">
+                <i class="fa fa-brain"></i>
+              </div>
+              <h4>ML Engine</h4>
+              <p>Powered by a Hybrid Random Forest & Isolation Forest model to identify zero-day anomalies with high precision.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="service-item">
+              <div class="icon">
+                <i class="fa fa-envelope-open-text"></i>
+              </div>
+              <h4>Smart Alerts</h4>
+              <p>Sends immediate SMTP email notifications to administrators with detailed attack vectors and timestamps.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="service-item">
+              <div class="icon">
+                <i class="fa fa-server"></i>
+              </div>
+              <h4>Device Control</h4>
+              <p>Manage  device status, enforce firewall policies, and update security configurations remotely.</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="service-item">
+              <div class="icon">
+                <i class="fa fa-file-csv"></i>
+              </div>
+              <h4>Forensic Reporting</h4>
+              <p>Download comprehensive attack logs (CSV) containing flow features and prediction scores for analysis.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="section cta" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 80px 0;">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h2 style="color: #fff; font-weight: 800; margin-bottom: 10px;">Ready to Secure Your Network?</h2>
+            <p style="color: #fff; font-size: 18px; opacity: 0.9; margin: 0;">Configure your IoT device parameters and enable the detection engine now.</p>
+          </div>
+          <div class="col-md-4 text-end">
+            <a href="/admin" class="btn-white" style="padding: 15px 40px;">
+               Go to Admin Panel
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/owl.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/accordions.js') }}"></script>
+    
+    <script>
+        // Optional: Navbar Scroll Effect if needed
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            }
+        });
+    </script>
+{% endblock %}

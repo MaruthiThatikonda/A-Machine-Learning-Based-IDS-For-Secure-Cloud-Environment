@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% block title %}Security Analysis{% endblock %}
+
+{% block head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* --- DARK CYBERSECURITY THEME --- */
+    :root {
+        --bg-dark: #0b0c15;
+        --card-bg: #151621;
+        --neon-blue: #00f2fe;
+        --neon-purple: #4facfe;
+        --neon-red: #ff4444;
+        --neon-green: #00ff88;
+        --text-main: #ffffff;
+    }
+
+    body {
+        background-color: var(--bg-dark) !important;
+        color: var(--text-main);
+    }
+
+    /* Banner */
+    .page-heading {
+        background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('/static/images/heading-bg.jpg');
+        background-size: cover;
+        padding: 100px 0 50px 0;
+        border-bottom: 1px solid #333;
+    }
+    .page-heading h1 { text-shadow: 0 0 20px var(--neon-blue); font-weight: 800; }
+
+    /* Cards */
+    .analysis-card {
+        background-color: var(--card-bg);
+        border: 1px solid #2a2b36;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        height: 100%;
+    }
+    
+    /* Metrics */
+    .metric-value {
+        font-size: 36px; font-weight: 800;
+        background: linear-gradient(to right, #fff, #ccc);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .metric-label { color: var(--neon-blue); font-size: 12px; text-transform: uppercase; font-weight: 700; }
+
+    /* Matrix */
+    .matrix-table { width: 100%; text-align: center; border-spacing: 5px; border-collapse: separate; }
+    .matrix-cell { padding: 15px; border-radius: 5px; border: 1px solid #333; }
+    .bg-tp { color: var(--neon-green); border-color: var(--neon-green); background: rgba(0,255,136,0.05); }
+    .bg-tn { color: var(--neon-blue); border-color: var(--neon-blue); background: rgba(0,242,254,0.05); }
+    .bg-fp { color: var(--neon-red); border-color: var(--neon-red); background: rgba(255,68,68,0.05); }
+    .bg-fn { color: orange; border-color: orange; background: rgba(255,165,0,0.05); }
+
+    /* IP List */
+    .ip-item {
+        display: flex; justify-content: space-between; padding: 12px;
+        border-bottom: 1px solid #2a2b36; font-family: monospace;
+    }
+    .ip-addr { color: var(--neon-red); font-weight: bold; }
+    
+    /* Button */
+    .btn-download {
+        background: linear-gradient(90deg, var(--neon-blue), #00c6ff);
+        color: #000; font-weight: 800; padding: 12px 30px;
+        border-radius: 30px; text-transform: uppercase; text-decoration: none;
+        display: inline-block;
+    }
+    .btn-download:hover { transform: translateY(-3px); color: #000; }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="page-heading header-text">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h1><i class="fa-solid fa-magnifying-glass-chart"></i> Analysis</h1>
+          <p><a href="/">Home</a> / <span>Reports</span></p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/download_logs" class="btn-download">
+                <i class="fa fa-download"></i> Download CSV
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="analysis-section" style="padding: 50px 0;">
+    <div class="container">
+        
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="analysis-card text-center">
+                    <div class="metric-value" id="accVal">0.0%</div>
+                    <div class="metric-label">Accuracy</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="analysis-card text-center">
+                    <div class="metric-value" id="precVal">0.0%</div>
+                    <div class="metric-label">Precision</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="analysis-card text-center">
+                    <div class="metric-value" id="recVal">0.0%</div>
+                    <div class="metric-label">Recall</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="analysis-card text-center">
+                    <div class="metric-value" id="f1Val">0.0%</div>
+                    <div class="metric-label">F1 Score</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="analysis-card">
+                    <h4 style="color:#fff; margin-bottom:20px;"><i class="fa fa-table"></i> Confusion Matrix</h4>
+                    <table class="matrix-table">
+                        <tr><td></td><td>PRED NORMAL</td><td>PRED ATTACK</td></tr>
+                        <tr>
+                            <td style="writing-mode: vertical-rl; transform: rotate(180deg);">ACTUAL NORMAL</td>
+                            <td class="matrix-cell bg-tn"><h3 id="tnVal">0</h3>True Neg</td>
+                            <td class="matrix-cell bg-fp"><h3 id="fpVal">0</h3>False Pos</td>
+                        </tr>
+                        <tr>
+                            <td style="writing-mode: vertical-rl; transform: rotate(180deg);">ACTUAL ATTACK</td>
+                            <td class="matrix-cell bg-fn"><h3 id="fnVal">0</h3>False Neg</td>
+                            <td class="matrix-cell bg-tp"><h3 id="tpVal">0</h3>True Pos</td>
+                        </tr>
+                    </table>
+                </div>
+            </div> -->
+
+            <!-- <div class="col-lg-6">
+                <div class="analysis-card">
+                    <h4 style="color:#fff; margin-bottom:20px;"><i class="fa fa-network-wired"></i> Top Attackers</h4>
+                    <ul style="list-style:none; padding:0;" id="topIpsList">
+                        <li class="text-center text-muted mt-5">Loading data...</li>
+                    </ul>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- <div class="row">
+            <div class="col-lg-6">
+                <div class="analysis-card">
+                    <h4 style="color:#fff;"><i class="fa fa-chart-line"></i> ROC Curve</h4>
+                    <div style="height: 250px;"><canvas id="rocChart"></canvas></div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="analysis-card">
+                    <h4 style="color:#fff;"><i class="fa fa-list-ol"></i> Feature Importance</h4>
+                    <div style="height: 250px;"><canvas id="featureChart"></canvas></div>
+                </div>
+            </div>
+        </div> -->
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        Chart.defaults.color = '#a0a0a0';
+        Chart.defaults.borderColor = '#333';
+
+        fetch('/api/metrics_data')
+            .then(r => r.json())
+            .then(data => {
+                // BUG FIX: Handle 'no_data' status gracefully
+                if(data.status === 'ok' || data.status === 'no_data') {
+                    updateDashboard(data);
+                }
+            })
+            .catch(e => console.error("API Error:", e));
+
+        function updateDashboard(data) {
+            // 1. Basic Metrics
+            const m = data.basic_metrics || {};
+            document.getElementById('accVal').innerText = ((m.accuracy||0)*100).toFixed(1) + '%';
+            document.getElementById('precVal').innerText = ((m.precision||0)*100).toFixed(1) + '%';
+            document.getElementById('recVal').innerText = ((m.recall||0)*100).toFixed(1) + '%';
+            document.getElementById('f1Val').innerText = ((m.f1||0)*100).toFixed(1) + '%';
+
+            // 2. Matrix
+            const cm = data.confusion_matrix || {};
+            document.getElementById('tnVal').innerText = cm.tn || 0;
+            document.getElementById('fpVal').innerText = cm.fp || 0;
+            document.getElementById('fnVal').innerText = cm.fn || 0;
+            document.getElementById('tpVal').innerText = cm.tp || 0;
+
+            // 3. Top IPs
+            const list = document.getElementById('topIpsList');
+            list.innerHTML = '';
+            if(data.top_ips && data.top_ips.length > 0) {
+                data.top_ips.forEach(i => {
+                    list.innerHTML += `<li class="ip-item"><span class="ip-addr">${i.ip}</span> <span class="badge bg-danger">${i.count}</span></li>`;
+                });
+            } else {
+                list.innerHTML = '<li class="text-center text-muted mt-5">No attacks recorded yet.</li>';
+            }
+
+            // 4. ROC Chart
+            new Chart(document.getElementById('rocChart'), {
+                type: 'line',
+                data: {
+                    labels: data.roc_data?.fpr || [0, 1],
+                    datasets: [{
+                        label: 'ROC',
+                        data: data.roc_data?.tpr || [0, 1],
+                        borderColor: '#00f2fe',
+                        backgroundColor: 'rgba(0, 242, 254, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 5. Features Chart
+            const feats = data.top_features || [];
+            const labels = feats.length ? feats.map(f=>f.feature) : ['Feature A', 'Feature B', 'Feature C'];
+            const scores = feats.length ? feats.map(f=>f.score) : [0.1, 0.2, 0.3];
+
+            new Chart(document.getElementById('featureChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels.slice(0,5),
+                    datasets: [{
+                        data: scores.slice(0,5),
+                        backgroundColor: ['#00f2fe','#4facfe','#00c6ff','#0072ff','#005bea'],
+                        borderRadius: 4
+                    }]
+                },
+                options: { 
+                    indexAxis: 'y', 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } } 
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

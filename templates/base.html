@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Cloud Security Monitor{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&family=Sono:wght@200;300;400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-pod-talk.css') }}">
+
+    <style>
+        /* Overrides for IoT Context */
+        .navbar-brand { font-weight: 700; color: var(--primary-color); }
+        .hero-section { background-position: center; background-size: cover; }
+        .custom-btn:hover { background-color: var(--secondary-color); color: #fff; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <main>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand me-lg-5 me-0" href="/">
+                    <i class="bi-shield-lock-fill me-2"></i> Secure<span style="color: #0dcaf0;">Cloud</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-lg-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/prediction' %}active{% endif %}" href="/prediction">Live Monitor</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/analysis' %}active{% endif %}" href="/analysis">Analysis</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/admin' %}active{% endif %}" href="/admin">Configuration</a>
+                        </li>
+                    </ul>
+
+                    <div class="ms-4">
+                        {% if session.get('user') %}
+                            <a href="/logout" class="btn custom-btn custom-border-btn smoothscroll">Logout</a>
+                        {% else %}
+                            <a href="/login" class="btn custom-btn custom-border-btn smoothscroll">Login</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-12 mb-5 mb-lg-0">
+                    <div class="subscribe-form-wrap">
+                        <h6>Cloud Security Monitor</h6>
+                        <p class="mb-0">Real-time Intrusion detection and mitigation using Machine Learning.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-12 mb-4 mb-md-0">
+                    <h6 class="site-footer-title mb-3">Quick Links</h6>
+                    <ul class="site-footer-links">
+                        <li class="site-footer-link-item"><a href="/" class="site-footer-link">Home</a></li>
+                        <li class="site-footer-link-item"><a href="/admin" class="site-footer-link">Admin</a></li>
+                        <li class="site-footer-link-item"><a href="/analysis" class="site-footer-link">Reports</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 col-12">
+                    <h6 class="site-footer-title mb-3">Status</h6>
+                    <p class="text-white d-flex align-items-center">
+                        <i class="bi-activity me-2"></i> System Online
+                    </p>
+                </div>
+            </div>
+            <div class="pt-5 pb-5 mt-5 border-top">
+                <div class="row">
+                    <div class="col-lg-12 col-12">
+                        <p class="copyright-text mb-0">Copyright © 2025-26 Cloud Security Project</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

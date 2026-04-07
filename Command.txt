@@ -1,0 +1,3 @@
+python generator.py --csv data/CICIDS2017_subset.csv --speed 1
+
+python train1.py --csv CICIDS2017_subset.csv
