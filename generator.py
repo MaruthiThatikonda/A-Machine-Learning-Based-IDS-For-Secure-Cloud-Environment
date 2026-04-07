@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import time
 import socketio
@@ -5,6 +6,10 @@ import argparse
 import numpy as np
 
 sio = socketio.Client()
+
+if not os.path.exists(csv_path):
+    print("CSV file not found")
+    exit()
 
 def replay(csv_path, server='http://localhost:5000', speed=1.0, flood=False):
     print(f"[INFO] Loading {csv_path}...")

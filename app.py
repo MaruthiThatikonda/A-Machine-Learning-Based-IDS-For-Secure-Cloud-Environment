@@ -6,6 +6,7 @@ import sqlite3
 import socket
 import smtplib
 import subprocess
+import threading
 import pandas as pd
 import numpy as np
 import traceback
@@ -88,6 +89,16 @@ def get_local_ip():
 
 # Initialize IP in config
 IOT_CONFIG['ip_address'] = get_local_ip()
+
+def start_generator():
+    import subprocess
+    subprocess.Popen([
+        "python", "generator.py",
+        "--csv", "data/CICIDS2017_subset.csv",
+        "--speed", "1"
+    ])
+
+threading.Thread(target=start_generator, daemon=True).start()
 
 def get_db():
     db = getattr(g, '_database', None)

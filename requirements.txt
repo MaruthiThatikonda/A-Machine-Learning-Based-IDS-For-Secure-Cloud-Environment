@@ -1,8 +1,7 @@
-Flask
+flask
 flask-socketio
 eventlet
-numpy
+gunicorn
 pandas
-scikit-learn
+numpy
 geoip2
-joblib
