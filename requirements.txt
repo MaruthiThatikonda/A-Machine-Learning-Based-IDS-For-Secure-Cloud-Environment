@@ -5,3 +5,4 @@ gunicorn
 pandas
 numpy
 geoip2
+joblib
