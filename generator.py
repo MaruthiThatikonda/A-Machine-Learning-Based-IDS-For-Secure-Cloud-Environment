@@ -26,7 +26,14 @@ def replay(csv_path, server=None, speed=1.0, flood=False):
     if server is None:
         server = "http://localhost:5000"
     print(f"[INFO] Loading {csv_path}...")
-    df = pd.read_csv(csv_path)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    csv_full_path = os.path.join(BASE_DIR, csv_path)
+
+    if not os.path.exists(csv_full_path):
+        print(f"[ERROR] File not found: {csv_full_path}")
+        return
+
+    df = pd.read_csv(csv_full_path)
     # Clean columns
     df.columns = df.columns.str.strip()
     
