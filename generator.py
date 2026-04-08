@@ -5,22 +5,20 @@ import socketio
 import argparse
 import numpy as np
 
-# Socket client
+# Socket.IO client
 sio = socketio.Client()
 
-# Base directory
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
+# =========================================================
+# Resolve CSV Path (root / data / absolute)
+# =========================================================
 def get_full_path(csv_path):
-    """Resolve correct CSV path (root/data/absolute)"""
     if os.path.isabs(csv_path):
         return csv_path
 
-    # Try root
     path1 = os.path.join(BASE_DIR, csv_path)
-
-    # Try data folder
     path2 = os.path.join(BASE_DIR, "data", csv_path)
 
     if os.path.exists(path1):
@@ -31,15 +29,17 @@ def get_full_path(csv_path):
         return None
 
 
+# =========================================================
+# Replay Function
+# =========================================================
 def replay(csv_path, server="http://localhost:5000", speed=1.0, flood=False):
     print(f"[INFO] Loading {csv_path}...")
 
-    # Resolve path
     csv_full_path = get_full_path(csv_path)
 
     if not csv_full_path:
         print(f"[ERROR] File not found: {csv_path}")
-        print("👉 Make sure file exists in root OR data/ folder")
+        print("👉 Ensure file exists in root OR data/ folder")
         return
 
     print(f"[INFO] Using file: {csv_full_path}")
@@ -60,15 +60,20 @@ def replay(csv_path, server="http://localhost:5000", speed=1.0, flood=False):
     records = df.to_dict(orient='records')
     print(f"[INFO] Loaded {len(records)} flows")
 
-    # Connect to server
+    # =========================================================
+    # CONNECT (FIXED - NO MORE NAMESPACE ERROR)
+    # =========================================================
     print(f"[INFO] Connecting to {server}...")
     try:
-        sio.connect(server)
+        sio.connect(server, transports=["websocket", "polling"], wait=True)
+        print("[INFO] ✅ Connected successfully")
     except Exception as e:
         print(f"[ERROR] Connection failed: {e}")
-        print("👉 Make sure server is running OR URL is correct")
         return
 
+    # =========================================================
+    # SEND DATA
+    # =========================================================
     try:
         for i, row in enumerate(records):
             payload = row.copy()
@@ -82,9 +87,13 @@ def replay(csv_path, server="http://localhost:5000", speed=1.0, flood=False):
                 payload['src_ip'] = f"{np.random.randint(1,255)}.{np.random.randint(0,255)}.{np.random.randint(0,255)}.{np.random.randint(0,255)}"
                 payload['dst_ip'] = f"{np.random.randint(1,255)}.{np.random.randint(0,255)}.{np.random.randint(0,255)}.{np.random.randint(0,255)}"
 
-            sio.emit('new_flow', payload)
+            try:
+                sio.emit('new_flow', payload, namespace='/')
+            except Exception as e:
+                print(f"[WARN] Emit failed: {e}")
+                continue
 
-            if i % 100 == 0:
+            if i % 10 == 0:
                 print(f"[INFO] Sent {i} flows...")
 
             time.sleep(1.0 / speed)
@@ -97,6 +106,9 @@ def replay(csv_path, server="http://localhost:5000", speed=1.0, flood=False):
         print("[INFO] Disconnected")
 
 
+# =========================================================
+# MAIN
+# =========================================================
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
