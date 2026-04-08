@@ -5,9 +5,6 @@
 __pycache__/
 *.pyc
 
-# Database files
-nids.db
-
 # OS files
 .DS_Store
 
