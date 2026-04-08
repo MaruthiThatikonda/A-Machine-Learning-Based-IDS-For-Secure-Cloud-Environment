@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% block title %}Device Configuration{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/templatemo-host-cloud.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.css') }}">
+
+    <style>
+        /* --- CRITICAL VISIBILITY FIXES --- */
+        
+        body {
+            color: #1a1a1a; /* Force default text color to dark */
+        }
+
+        /* 1. Card Background & Text */
+        .service-item {
+            background-color: #ffffff !important; /* Ensure White Card */
+            color: #1a1a1a !important;            /* Force Dark Text */
+            box-shadow: 0 0 15px rgba(0,0,0,0.15);
+            text-align: left !important;
+            padding: 40px 30px !important;
+            border-radius: 5px;
+            height: 100%;
+        }
+
+        /* 2. Headers (Device Identity, Security Protocols) */
+        .service-item h4 {
+            color: #000000 !important; /* Pitch Black Headers */
+            font-weight: 700;
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        /* 3. Paragraph Descriptions (The text below headers) */
+        .service-item p {
+            color: #555555 !important; /* Dark Grey Description */
+            font-weight: 500;
+            margin-bottom: 25px !important;
+            opacity: 1 !important;     /* Ensure it's not transparent */
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* 4. Form Labels */
+        .form-label {
+            color: #000000 !important; /* Pitch Black Labels */
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* 5. INPUT FIELDS (Fixing the Invisible Text) */
+        input[type="text"],
+        input[type="email"],
+        .modern-input {
+            background-color: #ffffff !important; /* White Background */
+            color: #000000 !important;            /* PITCH BLACK TEXT */
+            border: 1px solid #cccccc !important; /* Visible Grey Border */
+            padding: 12px 15px !important;
+            width: 100%;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Subtle inner shadow */
+        }
+        
+        /* Input Focus State */
+        input[type="text"]:focus,
+        input[type="email"]:focus {
+            border-color: #4facfe !important;
+            background-color: #fff !important;
+            color: #000 !important;
+            outline: none;
+        }
+
+        /* Read-only Input (IP Address) */
+        input[readonly] {
+            background-color: #e9ecef !important; /* Light Grey Background */
+            color: #333333 !important;            /* Dark Grey Text */
+            cursor: not-allowed;
+            border-color: #d6d8db !important;
+        }
+
+        /* 6. Small Hint Text */
+        small, .text-muted {
+            color: #6c757d !important;
+        }
+
+        /* 7. Rule Boxes */
+        .rule-box {
+            background: #f8f9fa;
+            border-left: 4px solid #ccc;
+            padding: 15px; 
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .rule-box h6 {
+            color: #000000 !important; /* Black Title */
+            font-weight: 700;
+            margin: 0;
+            font-size: 16px;
+        }
+        .rule-box small {
+            color: #555 !important;
+        }
+        .rule-box.danger {
+            background: #fff0f0;
+            border-left-color: #dc3545;
+        }
+        .rule-box.danger h6, .rule-box.danger small {
+            color: #dc3545 !important; /* Red Text */
+        }
+
+        /* Misc Theme Overrides */
+        .service-item .icon {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            float: left; margin-right: 20px;
+            color: #fff; font-size: 24px;
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+            border: none; color: #fff !important;
+            padding: 12px 35px; border-radius: 30px;
+            font-weight: 700; cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.2s;
+        }
+        .btn-gradient:hover {
+            transform: scale(1.05);
+        }
+
+        /* Toggle Switch Visibility */
+        .form-check-input {
+            width: 3.5em; height: 1.8em;
+            cursor: pointer;
+            border: 1px solid #999;
+        }
+        .form-check-input:checked {
+            background-color: #00f2fe;
+            border-color: #00f2fe;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="page-heading header-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h1>Device Control Panel</h1>
+            <p><a href="/">Home</a> / <span>Admin Configuration</span></p>
+            
+            <div class="mt-3">
+                {% if config.status == 'ON' %}
+                    <span class="badge" style="background-color: #00d2ff; padding: 10px 20px; font-size: 14px; color: #fff; border: 1px solid #fff;">
+                        <i class="fa fa-signal"></i> SYSTEM ONLINE
+                    </span>
+                {% else %}
+                    <span class="badge" style="background-color: #ff4d4d; padding: 10px 20px; font-size: 14px; color: #fff; border: 1px solid #fff;">
+                        <i class="fa fa-power-off"></i> SYSTEM OFFLINE
+                    </span>
+                {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="services section">
+      <div class="container">
+        <form method="POST">
+            <div class="row">
+              
+              <div class="col-lg-6 col-md-12 mb-4">
+                <div class="service-item">
+                  <div class="icon">
+                    <i class="fa fa-server"></i>
+                  </div>
+                  <div class="content">
+                    <h4>Device Identity</h4>
+                    <p>Configure the network identity and alerting protocols for this node.</p>
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">Device Name</label>
+                        <input type="text" name="device_name" class="modern-input" value="{{ config.device_name }}" required>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">IP Address (Auto-Detected)</label>
+                        <input type="text" class="modern-input" value="{{ config.ip_address }}" readonly>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label class="form-label">Admin Email (Alerts)</label>
+                        <input type="email" name="admin_email" class="modern-input" value="{{ config.admin_email }}" placeholder="admin@company.com">
+                        <small class="mt-1 d-block"><i class="fa fa-envelope"></i> Intrusion alerts will be sent here.</small>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-6 col-md-12 mb-4">
+                <div class="service-item">
+                  <div class="icon">
+                    <i class="fa fa-shield-alt"></i>
+                  </div>
+                  <div class="content">
+                    <h4>Security Protocols</h4>
+                    <p>Manage firewall rules and intrusion detection signatures.</p>
+                    
+                    <div class="rule-box">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>IPv4 Traffic</h6>
+                                <small>Standard Internet Protocol</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="ipv4" {% if config.ipv4_enabled %}checked{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rule-box">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>TCP Connections</h6>
+                                <small>Transmission Control Protocol</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="tcp" {% if config.tcp_enabled %}checked{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rule-box danger">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6><i class="fa fa-exclamation-triangle"></i> SYN Flood Rule</h6>
+                                <small>High-Priority Detection</small>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="syn_flood" style="background-color: #ffebeb; border-color: #ff4d4d;" {% if config.syn_flood_rule %}checked{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="service-item" style="padding: 30px !important; background: #1a1a1a !important; color: white !important;">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="d-flex align-items-center mb-3 mb-md-0">
+                                <div style="width: 50px; height: 50px; background: #333; border-radius: 50%; display:flex; align-items:center; justify-content:center; margin-right: 20px;">
+                                    <i class="fa fa-power-off" style="color: #fff; font-size: 20px;"></i>
+                                </div>
+                                <div>
+                                    <h4 style="color: white !important; margin: 0;">Main System Power</h4>
+                                    <span style="font-size: 13px; color: #ccc !important;">Master switch for ML Engine & Rules</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <div class="form-check form-switch me-4">
+                                    <input class="form-check-input" type="checkbox" name="device_status" style="transform: scale(1.2);" {% if config.status == 'ON' %}checked{% endif %}>
+                                </div>
+                                <button type="submit" class="btn-gradient">Save Configuration</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+      </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/owl.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/accordions.js') }}"></script>
+{% endblock %}

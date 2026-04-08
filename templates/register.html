@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block content %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register — NIDS Demo</title>
+
+  <!-- Theme CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='templatemo-chain-summit.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    .register-section {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background: radial-gradient(circle at center, rgba(10,10,30,1) 0%, rgba(5,5,20,1) 100%);
+    }
+    .register-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+      color: #fff;
+      z-index: 10;
+      text-align: center;
+    }
+    .register-box h2 {
+      font-size: 2rem;
+      color: #00ccff;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .register-box form {
+      text-align: left;
+    }
+    .register-box label {
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+    .register-box input {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      width: 100%;
+      color: #fff;
+      margin-bottom: 1rem;
+      outline: none;
+    }
+    .register-box input:focus {
+      box-shadow: 0 0 8px #00ccff;
+    }
+    .btn-register {
+      width: 100%;
+      background: linear-gradient(90deg, #00ccff, #8a2be2);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-register:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(0,204,255,0.4);
+    }
+    .login-link {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #ccc;
+      text-align: center;
+    }
+    .login-link a {
+      color: #00ccff;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    .bg-animation {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="register-section">
+    <div class="bg-animation">
+      <div class="neural-network" id="neuralNetwork"></div>
+      <div class="particles" id="particles"></div>
+    </div>
+
+    <div class="register-box">
+      <h2><i class="fa-solid fa-user-plus"></i> Create Account</h2>
+      <form method="POST">
+        <!-- Dummy Fields (for display only) -->
+        <div class="form-group">
+          <label><i class="fa-solid fa-id-card"></i> Full Name</label>
+          <input type="text" placeholder="John Doe" />
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-envelope"></i> Email</label>
+          <input type="email" placeholder="example@mail.com" />
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-location-dot"></i> Address</label>
+          <input type="text" placeholder="City, Country" />
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-phone"></i> Mobile Number</label>
+          <input type="text" placeholder="+91 98765 43210" />
+        </div>
+
+        <!-- Actual functional fields -->
+        <div class="form-group">
+          <label><i class="fa-solid fa-user"></i> Username</label>
+          <input type="text" name="username" required />
+        </div>
+
+        <div class="form-group">
+          <label><i class="fa-solid fa-lock"></i> Password</label>
+          <input type="password" name="password" required />
+        </div>
+
+        <button type="submit" class="btn-register">
+          <i class="fa-solid fa-user-check"></i> Register
+        </button>
+      </form>
+
+      <p class="login-link">
+        Already have an account? <a href="/login">Login here</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='templatemo-chain-scripts.js') }}"></script>
+</body>
+</html>
+{% endblock %}

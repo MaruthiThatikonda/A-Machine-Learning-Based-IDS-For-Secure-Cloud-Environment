@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+{% block title %}Security Analysis{% endblock %}
+
+{% block head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* --- DARK CYBERSECURITY THEME --- */
+    :root {
+        --bg-dark: #0b0c15;
+        --card-bg: #151621;
+        --neon-blue: #00f2fe;
+        --neon-purple: #4facfe;
+        --neon-red: #ff4444;
+        --neon-green: #00ff88;
+        --text-main: #ffffff;
+        --text-muted: #a0a0a0;
+    }
+
+    body {
+        background-color: var(--bg-dark) !important;
+        color: var(--text-main);
+        font-family: 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Banner */
+    .page-heading {
+        background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('/static/images/heading-bg.jpg');
+        background-size: cover;
+        padding: 100px 0 50px 0;
+        border-bottom: 1px solid #333;
+    }
+    .page-heading h1 { 
+        text-shadow: 0 0 20px var(--neon-blue); 
+        font-weight: 800; 
+        letter-spacing: 1px;
+    }
+
+    /* Content Section */
+    .analysis-section {
+        padding: 50px 0;
+        background-color: var(--bg-dark);
+    }
+
+    /* Cards */
+    .analysis-card {
+        background-color: var(--card-bg);
+        border: 1px solid #2a2b36;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    .analysis-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 4px; height: 100%;
+        background: linear-gradient(to bottom, var(--neon-blue), var(--neon-purple));
+    }
+
+    /* Metric Boxes (Top Row) */
+    .metric-box {
+        text-align: center;
+        padding: 10px;
+    }
+    .metric-value {
+        font-size: 36px;
+        font-weight: 800;
+        background: linear-gradient(to right, #fff, #ccc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 5px;
+    }
+    .metric-label {
+        color: var(--neon-blue);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+    }
+
+    /* Headers */
+    .card-header-dark {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 15px;
+    }
+    .card-title { font-size: 18px; font-weight: 700; color: #fff; }
+    .card-title i { margin-right: 10px; color: var(--neon-blue); }
+
+    /* Confusion Matrix Table */
+    .matrix-table { width: 100%; text-align: center; border-collapse: separate; border-spacing: 5px; }
+    .matrix-cell { 
+        padding: 20px; 
+        border-radius: 5px; 
+        border: 1px solid #333;
+    }
+    .matrix-val { font-size: 24px; font-weight: 700; display: block; }
+    .matrix-label { font-size: 11px; text-transform: uppercase; opacity: 0.7; }
+    
+    .bg-tp { background: rgba(0, 255, 136, 0.1); color: var(--neon-green); border-color: var(--neon-green); } /* True Pos */
+    .bg-tn { background: rgba(0, 242, 254, 0.1); color: var(--neon-blue); border-color: var(--neon-blue); } /* True Neg */
+    .bg-fp { background: rgba(255, 68, 68, 0.1); color: var(--neon-red); border-color: var(--neon-red); } /* False Pos */
+    .bg-fn { background: rgba(255, 165, 0, 0.1); color: orange; border-color: orange; } /* False Neg */
+
+    /* Top IPs List */
+    .ip-list { list-style: none; padding: 0; margin: 0; }
+    .ip-item {
+        display: flex; justify-content: space-between;
+        padding: 12px;
+        border-bottom: 1px solid #2a2b36;
+        font-family: monospace;
+        font-size: 14px;
+    }
+    .ip-item:last-child { border-bottom: none; }
+    .ip-addr { color: var(--neon-red); font-weight: bold; }
+    .ip-count { background: #333; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+
+    /* Download Button */
+    .btn-download {
+        background: linear-gradient(90deg, var(--neon-blue), #00c6ff);
+        color: #000;
+        font-weight: 800;
+        padding: 12px 30px;
+        border-radius: 30px;
+        text-transform: uppercase;
+        border: none;
+        box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .btn-download:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 25px rgba(0, 242, 254, 0.6);
+        color: #000;
+    }
+    
+    /* Loading Overlay */
+    #loading-overlay {
+        position: absolute; inset: 0; background: var(--card-bg); 
+        display: flex; align-items: center; justify-content: center; z-index: 10;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <div class="page-heading header-text">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h1><i class="fa-solid fa-magnifying-glass-chart"></i>  Analysis</h1>
+          <p><a href="/">Home</a> / <span>Reports</span></p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/download_logs" class="btn-download">
+                <i class="fa fa-download"></i> Download CSV Report
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="analysis-section">
+    <div class="container">
+        
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="analysis-card d-flex align-items-center justify-content-center">
+                    <div class="metric-box">
+                        <div class="metric-value" id="accVal">--%</div>
+                        <div class="metric-label">Model Accuracy</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="analysis-card d-flex align-items-center justify-content-center">
+                    <div class="metric-box">
+                        <div class="metric-value" id="precVal">--%</div>
+                        <div class="metric-label">Precision</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="analysis-card d-flex align-items-center justify-content-center">
+                    <div class="metric-box">
+                        <div class="metric-value" id="recVal">--%</div>
+                        <div class="metric-label">Recall Rate</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="analysis-card d-flex align-items-center justify-content-center">
+                    <div class="metric-box">
+                        <div class="metric-value" id="f1Val">--%</div>
+                        <div class="metric-label">F1 Score</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="analysis-card">
+                    <div class="card-header-dark">
+                        <span class="card-title"><i class="fa fa-table-cells"></i> Confusion Matrix</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: center; height: 250px;">
+                        <table class="matrix-table">
+                            <tr>
+                                <td></td>
+                                <td style="color: #888; font-size: 12px;">PREDICTED BENIGN</td>
+                                <td style="color: #888; font-size: 12px;">PREDICTED ATTACK</td>
+                            </tr>
+                            <tr>
+                                <td style="color: #888; font-size: 12px; writing-mode: vertical-rl; transform: rotate(180deg);">ACTUAL BENIGN</td>
+                                <td class="matrix-cell bg-tn">
+                                    <span class="matrix-val" id="tnVal">0</span>
+                                    <span class="matrix-label">True Negative</span>
+                                </td>
+                                <td class="matrix-cell bg-fp">
+                                    <span class="matrix-val" id="fpVal">0</span>
+                                    <span class="matrix-label">False Positive</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="color: #888; font-size: 12px; writing-mode: vertical-rl; transform: rotate(180deg);">ACTUAL ATTACK</td>
+                                <td class="matrix-cell bg-fn">
+                                    <span class="matrix-val" id="fnVal">0</span>
+                                    <span class="matrix-label">False Negative</span>
+                                </td>
+                                <td class="matrix-cell bg-tp">
+                                    <span class="matrix-val" id="tpVal">0</span>
+                                    <span class="matrix-label">True Positive</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- <div class="col-lg-6">
+                <div class="analysis-card">
+                    <div class="card-header-dark">
+                        <span class="card-title"><i class="fa fa-network-wired"></i> Top Attacking Sources</span>
+                    </div>
+                    <ul class="ip-list" id="topIpsList">
+                        <li class="text-center text-muted mt-5">Loading data...</li>
+                    </ul>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- <div class="row">
+            <div class="col-lg-6">
+                <div class="analysis-card">
+                    <div class="card-header-dark">
+                        <span class="card-title"><i class="fa fa-chart-line"></i> ROC Curve</span>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="rocChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="analysis-card">
+                    <div class="card-header-dark">
+                        <span class="card-title"><i class="fa fa-list-ol"></i> Feature Importance</span>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="featureChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Setup Charts Config
+        Chart.defaults.color = '#a0a0a0';
+        Chart.defaults.borderColor = '#333';
+
+        // 2. Fetch Data from Backend
+        fetch('/api/metrics_data')
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'ok') {
+                    updateDashboard(data);
+                } else {
+                    console.error("No data available");
+                }
+            })
+            .catch(err => console.error("API Error:", err));
+
+        function updateDashboard(data) {
+            // A. Basic Metrics
+            const metrics = data.basic_metrics || {};
+            document.getElementById('accVal').innerText = ((metrics.accuracy || 0) * 100).toFixed(1) + '%';
+            document.getElementById('precVal').innerText = ((metrics.precision || 0) * 100).toFixed(1) + '%';
+            document.getElementById('recVal').innerText = ((metrics.recall || 0) * 100).toFixed(1) + '%';
+            document.getElementById('f1Val').innerText = ((metrics.f1 || 0) * 100).toFixed(1) + '%';
+
+            // B. Confusion Matrix
+            const cm = data.confusion_matrix || {};
+            document.getElementById('tnVal').innerText = cm.tn || 0;
+            document.getElementById('fpVal').innerText = cm.fp || 0;
+            document.getElementById('fnVal').innerText = cm.fn || 0;
+            document.getElementById('tpVal').innerText = cm.tp || 0;
+
+            // C. Top IPs
+            const ipList = document.getElementById('topIpsList');
+            ipList.innerHTML = '';
+            if(data.top_ips && data.top_ips.length > 0) {
+                data.top_ips.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'ip-item';
+                    li.innerHTML = `<span class="ip-addr">${item.ip}</span> <span class="ip-count">${item.count} Threats</span>`;
+                    ipList.appendChild(li);
+                });
+            } else {
+                ipList.innerHTML = '<li class="text-center text-muted mt-5">No attacks recorded yet.</li>';
+            }
+
+            // D. ROC Chart
+            const ctxRoc = document.getElementById('rocChart').getContext('2d');
+            new Chart(ctxRoc, {
+                type: 'line',
+                data: {
+                    labels: data.roc_data.fpr || [0, 1],
+                    datasets: [{
+                        label: 'ROC Curve',
+                        data: data.roc_data.tpr || [0, 1],
+                        borderColor: '#00f2fe',
+                        backgroundColor: 'rgba(0, 242, 254, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }, {
+                        label: 'Random',
+                        data: data.roc_data.fpr || [0, 1], // Diagonal line
+                        borderColor: '#666',
+                        borderDash: [5, 5],
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'False Positive Rate' } },
+                        y: { title: { display: true, text: 'True Positive Rate' } }
+                    }
+                }
+            });
+
+            // E. Feature Importance (Simulated/Fetched)
+            const ctxFeat = document.getElementById('featureChart').getContext('2d');
+            
+            // Use real data if available, else placeholder
+            const features = data.top_features && data.top_features.length > 0 
+                ? data.top_features.map(f => f.feature) 
+                : ['Packet Size', 'Flow Duration', 'SYN Flag', 'IAT Mean', 'Protocol'];
+            
+            const scores = data.top_features && data.top_features.length > 0
+                ? data.top_features.map(f => f.score)
+                : [0.85, 0.70, 0.65, 0.45, 0.30];
+
+            new Chart(ctxFeat, {
+                type: 'bar',
+                data: {
+                    labels: features.slice(0, 5), // Top 5
+                    datasets: [{
+                        label: 'Importance Score',
+                        data: scores.slice(0, 5),
+                        backgroundColor: [
+                            '#00f2fe', '#4facfe', '#00c6ff', '#0072ff', '#005bea'
+                        ],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // Horizontal Bar
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

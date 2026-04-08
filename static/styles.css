@@ -1,0 +1,212 @@
+/* ============================================================
+   General Layout and Global Styles
+   ============================================================ */
+body {
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #212529;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+  color: #212529;
+}
+
+h2 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.container {
+  margin-top: 30px;
+  margin-bottom: 50px;
+}
+
+/* ============================================================
+   Navbar Styling
+   ============================================================ */
+.navbar {
+  background-color: #212529 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: #fff !important;
+  letter-spacing: 0.5px;
+}
+
+.nav-link {
+  color: #dcdcdc !important;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+  color: #ffffff !important;
+}
+
+/* ============================================================
+   Cards and Containers
+   ============================================================ */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: #fff;
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.card h5 {
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+/* ============================================================
+   Map and Live Feed Sections
+   ============================================================ */
+#map {
+  width: 100%;
+  height: 450px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+}
+
+#live-feed {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-height: 200px;
+}
+
+/* ============================================================
+   Control Panel
+   ============================================================ */
+.control-panel {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.control-panel h5 {
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.slider {
+  width: 100%;
+  margin: 10px 0 20px 0;
+}
+
+/* ============================================================
+   Buttons and UI Controls
+   ============================================================ */
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-success:hover {
+  background-color: #1f8b39;
+}
+
+/* ============================================================
+   Charts and Tables
+   ============================================================ */
+.chart-container {
+  position: relative;
+  height: 300px;
+  margin-top: 25px;
+  margin-bottom: 30px;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+footer {
+  text-align: center;
+  padding: 15px;
+  font-size: 0.9rem;
+  color: #6c757d;
+  background-color: #ffffff;
+  border-top: 1px solid #dee2e6;
+  margin-top: 40px;
+}
+
+/* ============================================================
+   Animations and Transitions
+   ============================================================ */
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   Responsive Design
+   ============================================================ */
+@media (max-width: 992px) {
+  #map {
+    height: 350px;
+  }
+
+  .control-panel {
+    margin-top: 20px;
+  }
+
+  .navbar-nav {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.4rem;
+  }
+  .btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+  .chart-container {
+    height: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  #map {
+    height: 300px;
+  }
+}
