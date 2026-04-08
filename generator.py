@@ -7,7 +7,7 @@ import numpy as np
 
 sio = socketio.Client()
 
-if not os.path.exists(csv_path):
+if not os.path.exists("data\CICIDS2017_subset.csv"):
     print("CSV file not found")
     exit()
 
