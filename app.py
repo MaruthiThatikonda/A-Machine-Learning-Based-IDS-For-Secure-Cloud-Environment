@@ -139,6 +139,34 @@ def send_alert_email(attack_type, details):
 # ===============================================================
 # ROUTES
 # ===============================================================
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin():
+    if request.method == 'POST':
+        # Update Config
+        IOT_CONFIG['device_name'] = request.form.get('device_name')
+
+        IOT_CONFIG['ipv4_enabled'] = 'ipv4' in request.form
+        IOT_CONFIG['tcp_enabled'] = 'tcp' in request.form
+        IOT_CONFIG['syn_flood_rule'] = 'syn_flood' in request.form
+
+        IOT_CONFIG['admin_email'] = request.form.get('admin_email')
+
+        # Device ON/OFF
+        IOT_CONFIG['status'] = 'ON' if 'device_status' in request.form else 'OFF'
+
+        print(f"[ADMIN] Config Updated: {IOT_CONFIG}")
+
+        return redirect(url_for('admin'))
+
+    # Refresh IP dynamically
+    IOT_CONFIG['ip_address'] = get_local_ip()
+
+    return render_template(
+        'admin.html',
+        config=IOT_CONFIG,
+        user=session.get('user')
+    )
 @app.route('/')
 def index():
     return render_template('index.html')
