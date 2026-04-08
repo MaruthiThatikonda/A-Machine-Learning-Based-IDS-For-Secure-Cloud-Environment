@@ -7,7 +7,24 @@ import numpy as np
 
 sio = socketio.Client()
 
-def replay(csv_path, server='http://localhost:5000', speed=1.0, flood=False):
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(BASE_DIR, "data", "CICIDS2017_subset.csv")
+if not os.path.exists(file_path):
+    print("Dataset not found")
+
+def run_generator():
+    import os
+    file_path = os.path.join("data", "CICIDS2017_subset.csv")
+
+    if not os.path.exists(file_path):
+        print("Dataset not found")
+        return
+
+    # your logic here
+
+def replay(csv_path, server=None, speed=1.0, flood=False):
+    if server is None:
+        server = "http://localhost:5000"
     print(f"[INFO] Loading {csv_path}...")
     df = pd.read_csv(csv_path)
     # Clean columns
@@ -59,6 +76,7 @@ if __name__ == '__main__':
     parser.add_argument('--csv', default='CICIDS2017_subset.csv')
     parser.add_argument('--speed', type=float, default=10.0)
     parser.add_argument('--flood', action='store_true', help="Generate DDoS Flood traffic")
+    parser.add_argument('--server', default=None)
     args = parser.parse_args()
-    
+    run_generator()
     replay(args.csv, speed=args.speed, flood=args.flood)

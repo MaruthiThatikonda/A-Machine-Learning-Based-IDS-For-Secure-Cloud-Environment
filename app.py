@@ -24,7 +24,12 @@ from functools import wraps
 # Local Imports
 from inference import predict_flow, set_detector_params
 from utils import init_db, log_prediction, DB_PATH, get_metrics_data, get_all_logs_csv
-
+try:
+    from generator import run_generator
+except Exception as e:
+    print("Generator load failed:", e)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "users.db")
 # ===============================================================
 # Configuration & Globals
 # ===============================================================
@@ -98,12 +103,11 @@ def start_generator():
         "--speed", "1"
     ])
 
-threading.Thread(target=start_generator, daemon=True).start()
-
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DB_PATH)
+        g._database.row_factory = sqlite3.Row
     return db
 
 @app.teardown_appcontext
