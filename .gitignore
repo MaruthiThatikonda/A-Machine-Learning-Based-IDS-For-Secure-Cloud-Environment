@@ -6,13 +6,7 @@ __pycache__/
 *.pyc
 
 # Database files
-*.db
-
-# Large datasets
-*.csv
-
-# GeoIP database
-GeoLite2-City.mmdb
+nids.db
 
 # OS files
 .DS_Store
