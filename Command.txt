@@ -1,3 +1,3 @@
 python generator.py --csv data/CICIDS2017_subset.csv --speed 1
-
+python generator.py --csv data/CICIDS2017_subset.csv --speed 1 --server https://ids-project-g6xu.onrender.com
 python train1.py --csv CICIDS2017_subset.csv
