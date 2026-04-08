@@ -4,8 +4,6 @@ import time
 import sqlite3
 import socket
 import smtplib
-import pandas as pd
-import numpy as np
 import traceback
 import geoip2.database
 
@@ -18,16 +16,31 @@ from flask_socketio import SocketIO
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
-# Local Imports
+# Local imports
 from inference import predict_flow
 from utils import init_db, log_prediction, get_metrics_data, get_all_logs_csv
 
 # ===============================================================
-# PATH FIX (VERY IMPORTANT)
+# PATH SETUP (CRITICAL)
 # ===============================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "users.db")
+SQL_PATH = os.path.join(BASE_DIR, "nids.sql")
 GEOIP_DB = os.path.join(BASE_DIR, "GeoLite2-City.mmdb")
+
+# ===============================================================
+# LOAD DB FROM SQL (FOR RENDER)
+# ===============================================================
+def load_db_from_sql():
+    if not os.path.exists(DB_PATH):
+        print("[INFO] Creating DB from SQL dump...")
+        conn = sqlite3.connect(DB_PATH)
+        if os.path.exists(SQL_PATH):
+            with open(SQL_PATH, "r") as f:
+                conn.executescript(f.read())
+        conn.close()
+
+load_db_from_sql()
 
 # ===============================================================
 # APP CONFIG
@@ -37,7 +50,7 @@ app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET', 'iot-sec-key-123')
 
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
-# Initialize DB
+# Initialize DB tables if needed
 init_db()
 
 # ===============================================================
@@ -64,7 +77,7 @@ SMTP_PASS = 'masvczanrdbufpuq'
 last_email_time = 0
 
 # ===============================================================
-# GEOIP FIX
+# GEOIP SETUP
 # ===============================================================
 try:
     geoip_reader = geoip2.database.Reader(GEOIP_DB)
@@ -139,38 +152,11 @@ def send_alert_email(attack_type, details):
 # ===============================================================
 # ROUTES
 # ===============================================================
-@app.route('/admin', methods=['GET', 'POST'])
-@login_required
-def admin():
-    if request.method == 'POST':
-        # Update Config
-        IOT_CONFIG['device_name'] = request.form.get('device_name')
-
-        IOT_CONFIG['ipv4_enabled'] = 'ipv4' in request.form
-        IOT_CONFIG['tcp_enabled'] = 'tcp' in request.form
-        IOT_CONFIG['syn_flood_rule'] = 'syn_flood' in request.form
-
-        IOT_CONFIG['admin_email'] = request.form.get('admin_email')
-
-        # Device ON/OFF
-        IOT_CONFIG['status'] = 'ON' if 'device_status' in request.form else 'OFF'
-
-        print(f"[ADMIN] Config Updated: {IOT_CONFIG}")
-
-        return redirect(url_for('admin'))
-
-    # Refresh IP dynamically
-    IOT_CONFIG['ip_address'] = get_local_ip()
-
-    return render_template(
-        'admin.html',
-        config=IOT_CONFIG,
-        user=session.get('user')
-    )
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# ---------------- LOGIN ----------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -191,6 +177,7 @@ def login():
 
     return render_template('login.html')
 
+# ---------------- REGISTER ----------------
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -211,11 +198,56 @@ def register():
 
     return render_template('register.html')
 
+# ---------------- ADMIN PANEL ----------------
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin():
+    global IOT_CONFIG
+
+    if request.method == 'POST':
+        IOT_CONFIG['device_name'] = request.form.get('device_name')
+        IOT_CONFIG['ipv4_enabled'] = 'ipv4' in request.form
+        IOT_CONFIG['tcp_enabled'] = 'tcp' in request.form
+        IOT_CONFIG['syn_flood_rule'] = 'syn_flood' in request.form
+        IOT_CONFIG['admin_email'] = request.form.get('admin_email')
+        IOT_CONFIG['status'] = 'ON' if 'device_status' in request.form else 'OFF'
+
+        print("[ADMIN] Updated:", IOT_CONFIG)
+        return redirect(url_for('admin'))
+
+    IOT_CONFIG['ip_address'] = get_local_ip()
+
+    return render_template('admin.html', config=IOT_CONFIG, user=session.get('user'))
+
+# ---------------- LOGOUT ----------------
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('index'))
+
+# ---------------- PREDICTION PAGE ----------------
 @app.route('/prediction')
 @login_required
 def prediction():
-    return render_template('prediction.html', user=session['user'])
+    return render_template('prediction.html', user=session['user'], status=IOT_CONFIG['status'])
 
+# ---------------- ANALYSIS ----------------
+@app.route('/analysis')
+@login_required
+def analysis():
+    return render_template('analysis.html', user=session['user'])
+
+# ---------------- DOWNLOAD LOGS ----------------
+@app.route('/download_logs')
+@login_required
+def download_logs():
+    csv_data = get_all_logs_csv()
+    response = make_response(csv_data)
+    response.headers["Content-Disposition"] = "attachment; filename=iot_attack_logs.csv"
+    response.headers["Content-Type"] = "text/csv"
+    return response
+
+# ---------------- METRICS API ----------------
 @app.route('/api/metrics_data')
 @login_required
 def metrics_data():
@@ -238,12 +270,21 @@ def handle_new_flow(data):
             socketio.emit('alarm', res)
             send_alert_email("Attack Detected", res)
 
+        log_prediction({
+            'ts': time.time(),
+            'src_ip': data.get('src_ip'),
+            'dst_ip': data.get('dst_ip'),
+            'features': json.dumps(data),
+            'attack_score': res.get('attack_score'),
+            'label': res.get('label')
+        })
+
     except Exception as e:
         print("[ERROR]", e)
         traceback.print_exc()
 
 # ===============================================================
-# MAIN (FIXED)
+# MAIN
 # ===============================================================
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
